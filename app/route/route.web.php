@@ -20,16 +20,14 @@ function handle_route(): void {
     // Liste des routes autorisées
     $routes = [
         '' => 'auth.controller.php',
-        'login' => 'auth.controller.php',
+        'auth' => 'auth.controller.php',
         'promotion' => 'promotion.controller.php',
-        'referentiel' => 'referentiel.controller.php',
-        'admin' => 'admin.controller.php'
+        'referentiel' => 'referentiel.controller.php'
     ];
 
     // Récupération de la page demandée
     $page = $_REQUEST['page'] ?? '';
-
-    // Vérification si la route existe
+    
     if (array_key_exists($page, $routes)) {
         $controllerFile = Paths::CONTROLLERS->resolve($routes[$page]);
         

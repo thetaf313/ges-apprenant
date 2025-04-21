@@ -3,8 +3,10 @@ namespace App\Controllers;
 
 use App\Enums\Paths;
 use App\Enums\Sessions;
+use App\Enums\Validators;
 use App\Services\SessionService;
-use App\Services\ValidatorService;
+use App\Services\Vali
+
 
 function handle_auth(): void {
     $action = $_REQUEST['action'] ?? 'login';
@@ -31,14 +33,18 @@ function show_login_form(array $errors = []): void {
 }
 
 function process_login(): void {
+
+    $user = [
+        'login' => $_POST['login'] ?? '',
+        'password' => $_POST['password'] ?? ''
+    ];
     // Validation des données
-    $validator = new ValidatorService();
     $rules = [
-        'login' => ['required', 'min:3'],
-        'password' => ['required', 'min:6']
+        'login' => ['required', str_contains($user['login'], '@') ? 'email' : 'min:7'],
+        'password' => ['required', 'min:8']
     ];
     
-    $validation = $validator->validate($_POST, $rules);
+    
     
     if (!$validation['is_valid']) {
         show_login_form($validation['errors']);
@@ -78,7 +84,7 @@ function send_reset_link(): void {
     // Envoi du lien de réinitialisation (simulé)
     $token = bin2hex(random_bytes(32));
     SessionService::setFlash('reset_token', $token);
-    SessionService::setFlash('success', 'Un lien de réinitialisation a été envoyé à votre email');
+    SessionService::setFlash('success', 'loginUn lien de réinitialisation a été envoyé à votre email');
     
     header('Location: ?page=auth&action=reset-password&token='.$token);
     exit;
@@ -155,6 +161,14 @@ function authenticate_user(string $login, string $password): ?array {
     }
     
     return null;
+}
+
+function validate_user(array $user, array $rules) : array {
+    // Validation des données
+    $rules = [
+        'login' => ['required', str_contains($user['login'], '@') ? 'email' : 'min:7'],
+        'password' => ['required', 'min:8']
+    ];
 }
 
 handle_auth();

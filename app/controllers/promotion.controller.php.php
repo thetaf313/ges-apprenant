@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Controllers;
 
 function handle_promotion(): void {
     $action = $_REQUEST['action'] ?? 'list';
@@ -14,5 +14,6 @@ function handle_promotion(): void {
 }
 
 function get_all_promotions() : void {
-    
+
+
 }

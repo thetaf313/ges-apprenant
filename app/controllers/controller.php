@@ -33,6 +33,75 @@ function redirect_to_route(string $route, int $status_code = 302): void
 }
 
 /**
+ * Valide des données selon des règles
+ * 
+ * @param array $data Données à valider
+ * @param array $rules Règles de validation
+ * @return array ['is_valid' => bool, 'errors' => array]
+ */
+function validate(array $data, array $rules): array {
+    global $validators, $validationMessages;
+    
+    $errors = [];
+    
+    foreach ($rules as $field => $fieldRules) {
+        $value = $data[$field] ?? null;
+        $fieldErrors = validate_field($field, $value, $fieldRules, $data);
+        
+        if (!empty($fieldErrors)) {
+            $errors[$field] = $fieldErrors[0]; // On ne garde que la première erreur
+        }
+    }
+    
+    return [
+        'is_valid' => empty($errors),
+        'errors' => $errors
+    ];
+}
+
+
+/**
+ * Valide un champ spécifique
+ */
+function validate_field(string $field, $value, $rules, array $data): array {
+    global $validators;
+    
+    $errors = [];
+    $rulesArray = is_array($rules) ? $rules : explode('|', $rules);
+    
+    foreach ($rulesArray as $rule) {
+        $parts = explode(':', $rule, 2);
+        $ruleName = $parts[0];
+        $ruleParam = $parts[1] ?? null;
+        
+        $isValid = $validators[$ruleName]($value, $ruleParam, $data);
+        
+        if (!$isValid) {
+            $errors[] = get_validation_message($field, $ruleName, $ruleParam);
+            break; // On s'arrête à la première erreur
+        }
+    }
+    
+    return $errors;
+}
+
+/**
+ * Retourne le message d'erreur approprié
+ */
+function get_validation_message(string $field, string $rule, $param = null): string {
+    global $validationMessages;
+    
+    $message = $validationMessages[$rule] ?? 'Validation failed for field %s';
+    
+    if (str_contains($message, '%s')) {
+        return sprintf($message, $field, $param);
+    }
+    
+    return str_replace('%s', $field, $message);
+}
+
+
+/**
  * Sauvegarde un fichier uploadé
  * 
  * @param array $file Fichier uploadé ($_FILES['nom_du_champ'])
