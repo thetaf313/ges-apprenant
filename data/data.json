@@ -1,0 +1,43 @@
+{
+    "users": [
+        {
+            "matricule": "1111111",
+            "nom": "Doe",
+            "prenom": "John",
+            "email": "admin1@gmail.com",
+            "password": "admin123",
+            "role": "Admin"
+        },
+
+        {
+            "matricule": "1111112",
+            "nom": "Doe",
+            "prenom": "Jane",
+            "email": "admin2@gmail.com",
+            "password": "admin123",
+            "role": "Admin"
+        }
+    ],
+
+    "promotions": [
+        {
+            "nom_promotion": "promotion 2025",
+            "referentiels": [],
+            "nb_apprenants": 180,
+            "date_debut": "06/02/2025",
+            "date_fin": "07/12/2025",
+            "etat": "active",
+            "photo": "/uploads/img_12dd23d323.jpg"
+        }
+    ],
+
+    "referentiels": [
+        {
+            "nom_referentiel": "dev web/mobile",
+            "nb_modules": 8,
+            "nb_apprenants": 50,
+            "description": "Developpement web/mobile ...",
+            "photo": "/uploads/img_12dd23d324.jpg"
+        }
+    ]
+}
