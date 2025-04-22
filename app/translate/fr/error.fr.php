@@ -1,5 +1,7 @@
 <?php
-enum ErrorMessages:string {
+namespace App\translate\fr;
+
+enum FrErrorMessages:string {
 
     case REQUIRED = 'Le champ %s est obligatoire';
     case EMAIL = 'Le champ %s doit être un email valide';

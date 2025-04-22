@@ -170,6 +170,10 @@
     color: var(--text-error);
     background-color: var(--bg-error);
   }
+
+  .input-error {
+    color: var(--text-error);
+  }
   
   #form-container form {
     /* border: var(--bd-1) solid; */
@@ -541,7 +545,7 @@
   /* Contenu qui défile sous le header */
   .content {
     margin-top: 70px; /* hauteur du header */
-    overflow-y: auto;
+    overflow-y: hidden;
     height: calc(100vh - 70px);
     padding: 0.5rem var(--p-2);
   }
@@ -647,6 +651,12 @@
   
   .content-container .contents-cards-bar:last-child {
     margin-right: 0;
+  }
+
+  .contents-cards-bar form {
+    display: flex;
+    gap: var(--p-1);
+    flex: 1;
   }
   
   .contents-cards-bar .search-box {

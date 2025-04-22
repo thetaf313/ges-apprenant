@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\Paths;
+
 use function App\Controllers\render_view;
 
 function handle_request() {
@@ -23,3 +25,4 @@ function error_forbidden(array $params = []) {
 }
 
 
+handle_request();

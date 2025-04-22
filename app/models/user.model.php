@@ -8,7 +8,7 @@ require_once Paths::MODELS->resolve('model.php');
 use App\Enums\FileServices;
 use App\Enums\Users;
 
-$file_services = require Paths::MODELS->resolve('user.model.php');
+$user_services = [];
 
 $user_services = [
 
@@ -19,8 +19,15 @@ $user_services = [
 
     Users::FIND_USER->value => function(array $users, array $user_to_find) {
         $filtered = array_filter($users, fn($user) =>
-            $user['login'] === $user_to_find[0] && $user['password'] === $user_to_find[1]
+            ($user['email'] === $user_to_find['login'] || $user['matricule'] === $user_to_find['login']) && $user['password'] === $user_to_find['password']
         );
-        return !empty($filtered) ? array_values($filtered)[0] : null;
-    }
+        return !empty($filtered) ? $filtered[0] : null;
+        // return !empty($filtered) ? array_values($filtered)[0] : null;
+    },
+
+    Users::SAVE_USER->value => function(array $users) use (&$file_services) : void {
+        $data = $file_services[FileServices::JSON_TO_ARRAY->value]();
+        $data['users'] = $users;
+        $file_services[FileServices::ARRAY_TO_JSON->value]($data);
+    } 
 ];

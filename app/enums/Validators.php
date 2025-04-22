@@ -14,6 +14,12 @@ enum Validators:string {
     case IN = 'in';
     case SAME = 'same';
 
+    case VALIDATE = 'validate';
+    case VALIDATE_FIELD = 'validate_field';
+    case GET_VALIDATION_MESSAGE = 'get_validation_message';
+    case ADD_VALIDATOR = 'add_validator';
+
+
 }
 
 enum SuccessMessage:string {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Liste des Promotions</title>
-    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
   </head>
   <body>
     <div class="dashboard-container">
@@ -221,11 +221,13 @@
           </div>
         </header>
 
+        
+
         <!-- Contenu principal qui sera remplacé par les vues -->
         <?= $content ?? '' ?>
 
 
-        </main>
+      </main>
     </div>
     <!-- Checkbox pour ouvrir/fermer -->
     <input type="checkbox" id="modal-toggle" />

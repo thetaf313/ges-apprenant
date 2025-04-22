@@ -3,14 +3,23 @@ namespace App\Controllers;
 
 use App\Enums\Paths;
 
+require_once Paths::CONTROLLERS->resolve('error.controller.php');
+require_once Paths::CONTROLLERS->resolve('auth.controller.php');
+require_once Paths::CONTROLLERS->resolve('promotion.controller.php');
+
+
 /**
  * Fonctions utilitaires pour les contrôleurs
  */
 
  function render_view(string $viewPath, string $layoutPath, array $data = []) : void {
-    extract($data);
-    $content = include Paths::VIEWS->resolve($viewPath);
-    require Paths::LAYOUTS->resolve($layoutPath);
+    extract($data); // Rend chaque clé de $data accessible comme variable
+
+    ob_start(); // Démarre la capture de sortie
+    include Paths::VIEWS->resolve($viewPath); // Charge la vue
+    $content = ob_get_clean(); // Récupère le contenu capturé
+
+    require Paths::LAYOUTS->resolve($layoutPath); // Charge le layout avec $content
 }
 
 /**

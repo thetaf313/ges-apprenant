@@ -1,11 +1,11 @@
 <?php
 // Définition des variables pour le layout
-$title = 'Connexion';
-ob_start(); // Démarre la capture de sortie
+$title = 'Promotion';
+//ob_start(); // Démarre la capture de sortie
 ?>
 
-<!-- Section de contenu -->
-<section class="content">
+      <!-- Section de contenu -->
+      <section class="content">
           <div class="content-container view-grid">
             <div class="content-header">
               <div class="">
@@ -112,6 +112,7 @@ ob_start(); // Démarre la capture de sortie
             </div>
 
             <div class="contents-cards-bar">
+              <form action="?page=promotion&action=list&search=<?= $_POST['nom-promo'] ?>">
               <div class="search-box">
                 <span>
                   <svg
@@ -140,12 +141,13 @@ ob_start(); // Démarre la capture de sortie
                 <input type="text" placeholder="Rechercher..." />
               </div>
               <div class="select-box">
-                <select>
-                  <option value="">Tous</option>
+                <select name="nom-promo">
+                  <option type="submit" value="">Tous</option>
                   <option value="">Tous</option>
                   <option value="">Tous</option>
                 </select>
               </div>
+              </form>
               <div class="option-view-box">
                 <div class="view grill active">
                   <a href="#">Grille</a>
@@ -404,9 +406,10 @@ ob_start(); // Démarre la capture de sortie
               </div>
             </div>
           </div>
-        </section>
+      </section>
 
 <?php
 // Fin de capture et passage au layout
-$content = ob_get_clean();
-require __DIR__ . '/../layout/base.layout.php';
+//$content = ob_get_clean();
+//include __DIR__ . './../layout/grid.layout.php';
+?>
