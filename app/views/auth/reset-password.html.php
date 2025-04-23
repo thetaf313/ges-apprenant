@@ -1,4 +1,7 @@
 <?php
+
+use App\Enums\Routes;
+
 $title = 'Changement de mot de passe';
 ?>
 
@@ -15,7 +18,7 @@ $title = 'Changement de mot de passe';
         <div class="error message"><?= htmlspecialchars($error_message) ?></div>
     <?php endif; ?>
 
-    <form action="/?page=auth&action=change-password" method="post">
+    <form action="<?= Routes::AUTH->resolve() ?>?action=change-password" method="post">
         <h1>Changer le mot de passe</h1>
 
         <div class="form-group">

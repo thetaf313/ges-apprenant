@@ -1,49 +1,44 @@
 <?php
 namespace App\Controllers;
 
-// require_once __DIR__ . './../enums/Paths.php';
-// require_once __DIR__ . './../enums/Users.php';
-// require_once __DIR__ . './../enums/Sessions.php';
-// require_once __DIR__ . './../enums/Validators.php';
-// require_once __DIR__ . './../translate/fr/error.fr.php';
-// require_once __DIR__ . './../translate/fr/message.fr.php';
-
-
 use App\Enums\Paths;
+use App\Enums\Routes;
 use App\Enums\Sessions;
 use App\Enums\Users;
 use App\Enums\Validators;
 use App\translate\fr\FrErrorMessages;
 use App\translate\fr\FrSuccessMessage;
 
+use function App\Services\session_service_exec;
 
 function handle_auth(): void {
+
     $action = $_REQUEST['action'] ?? 'login';
 
+    // Tableau d’actions vers fonctions
     match($action) {
-        'login' => $_SERVER['REQUEST_METHOD'] === 'POST' ? process_login() : show_login_form(),
-        // 'process_login' => process_login(),
+        'login' => $_SERVER['REQUEST_METHOD'] === 'POST'
+        ? process_login()
+        : (session_service_exec(Sessions::GET_USER) 
+            ? redirect_to_route(Routes::PROMOTION->resolve())
+            : show_login_form()),
         'forgot-password' => show_verify_email_form(),
         'verify-email' => send_reset_link(),
-        'send-reset-link' => send_reset_link(),
         'reset-password' => show_reset_password_form(),
-        'update-password' => update_password(),
+        'change-password' => update_password(),
         'logout' => logout(),
         default => show_login_form()
     };
     return;
 }
 
-function show_login_form(): void {
+function show_login_form() {
     global $session_services;
-    // Repetition (mettre dans une fonction)
-    $errors = $session_services[Sessions::GET_ERRORS->value]();
-    $error_message = $session_services[Sessions::GET_ERROR_MESSAGE->value]();
-    $flash_success = $session_services[Sessions::GET_FLASH_SUCCESS->value]();
-    $session_services[Sessions::UNSET_SESSION->value]('error_message');
-    $session_services[Sessions::UNSET_SESSION->value]('errors');
-    $session_services[Sessions::UNSET_SESSION->value]('flash_success');
-    // $session_services[Sessions::UNSET_SESSION->value]('old_input');
+
+$flash_success = $session_services[Sessions::GET_FLASH_SUCCESS->value]();
+$errors = $session_services[Sessions::GET_ERRORS->value]();
+$error_message = $session_services[Sessions::GET_ERROR_MESSAGE->value]();
+    
     $data = [
         'title' => 'Connexion',
         'errors' => $errors,
@@ -51,9 +46,10 @@ function show_login_form(): void {
         'old_input' => $_POST ?? []
     ];
     render_view('auth/login.html.php', 'base.layout.php', $data);
-   
-    var_dump($_SESSION);
-    die;
+    $session_services[Sessions::UNSET_SESSION->value]('error_message');
+    $session_services[Sessions::UNSET_SESSION->value]('errors');
+    $session_services[Sessions::UNSET_SESSION->value]('flash_success');
+    // $session_services[Sessions::UNSET_SESSION->value]('old_input');
     exit;
 }
 
@@ -71,7 +67,6 @@ function show_verify_email_form() {
     render_view('auth/verify-email.html.php', 'base.layout.php', $data);
     $session_services[Sessions::UNSET_SESSION->value]('errors');
     $session_services[Sessions::UNSET_SESSION->value]('error_message');
-    exit;
     exit;
 }
 
@@ -95,24 +90,26 @@ function process_login(): void {
         $session_services[Sessions::SET_ERRORS->value]($validation['errors']);
         $session_services[Sessions::SET_OLD_INPUT->value]($user);
         $session_services[Sessions::SET_ERROR_MESSAGE->value](FrErrorMessages::LOGIN_ERROR->value);
-        redirect_to_route('/?page=auth&action=login');
-        return;
+        redirect_to_route(Routes::AUTH->resolve());
+        exit;
     }
 
-    $authUser = authenticate_user($user, $user_services);
+    $authenticated = authenticate_user($user, $user_services);
 
-    if ($authUser) {
-        $session_services[Sessions::SET_USER->value]($user);
+    if ($authenticated) {
+        // $session_services[Sessions::SET_USER->value]($user);
         $session_services[Sessions::SET_FLASH_SUCCESS->value](FrSuccessMessage::LOGIN_SUCCESS->value);
-        redirect_to_route('/?page=promotion');
+        error_log('Utilisateur authentifié: ' . print_r($_SESSION, true));
+        redirect_to_route(Routes::PROMOTION->resolve());
+        // render_view('promotion/list_promotion_grid.html.php', 'grid.layout.php');
         exit;
     }
     $session_services[Sessions::SET_ERROR_MESSAGE->value](FrErrorMessages::LOGIN_ERROR->value);
-    redirect_to_route('/?page=auth&action=login');
+    redirect_to_route(Routes::PROMOTION->resolve());
     exit;
 }
 
-function show_forget_password_form(array $errors = []): void {
+function show_forget_password_form(): void {
     global $session_services;
     $errors = $session_services[Sessions::GET_ERRORS->value]();
     $error_message = $session_services[Sessions::GET_ERROR_MESSAGE->value]();
@@ -149,17 +146,17 @@ function send_reset_link(): void {
 
     if (!$validation['is_valid']) {
         $session_services[Sessions::SET_ERRORS->value]($validation['errors']);
-        redirect_to_route('?page=auth&action=forgot-password');
+        redirect_to_route(Routes::AUTH->resolve() . '?action=forgot-password');
         exit;
     }
 
     if (find_user_by_email($_POST['login'])) {
         $session_services[Sessions::SET_EMAIL_PASSWORD_TO_UPDATE->value]($_POST['login']);
-        show_reset_password_form();
+        redirect_to_route(Routes::AUTH->resolve() . '?action=reset-password');
         exit;
     }
     $session_services[Sessions::SET_ERROR_MESSAGE->value](FrErrorMessages::VERIFY_EMAIL_ERROR->value);
-    redirect_to_route('?page=auth&action=forgot-password');
+    redirect_to_route(Routes::AUTH->resolve() . '?action=forgot-password');
     exit;
 }
 
@@ -193,14 +190,14 @@ function update_password(): void {
 
     if (!$validation['is_valid']) {
         $session_services[Sessions::SET_ERRORS->value]($validation['errors']);
-        redirect_to_route('/?page=auth&action=reset-password');
+        redirect_to_route(Routes::AUTH->resolve() . '?action=reset-password');
         exit;
     }
 
     $email = $session_services[Sessions::GET_EMAIL_PASSWORD_TO_UPDATE->value]();
     if (!$email) {
         $session_services[Sessions::SET_ERROR_MESSAGE->value]("Une erreur est survenue.");
-        redirect_to_route('/?page=auth&action=login');
+        redirect_to_route(Routes::AUTH->resolve() . '?action=login');
         exit;
     }
 
@@ -215,7 +212,7 @@ function update_password(): void {
     $user_services[Users::SAVE_USER->value]($users);
 
     $session_services[Sessions::SET_FLASH_SUCCESS->value](FrSuccessMessage::UPDATE_PASSWORD_SUCCESS->value);
-    redirect_to_route('/?page=auth&action=login');
+    redirect_to_route(Routes::AUTH->resolve());
     exit;
 }
 
@@ -224,36 +221,48 @@ function logout(): void {
     global $session_services;
 
     $session_services[Sessions::DESTROY_SESSION->value]();
-    redirect_to_route('/?page=auth&action=login');
+    redirect_to_route(Routes::AUTH->resolve());
     exit;
 }
 
-// Simulé - à remplacer par votre vraie logique métier
-function authenticate_user(array $user, $user_services): bool {
 
+// function authenticate_user(array $user, $user_services): bool {
+//     global $session_services;
+
+//     $users = $user_services[Users::GET_USERS->value]();
+//     $user_found = $user_services[Users::FIND_USER->value]($users, $user);
+
+//     if ($user_found) {
+        
+//         $session_services[Sessions::SET_USER->value]([
+//             'email' => $user_found['email'],
+//             'nom' => $user_found['nom'],
+//             'prenom' => $user_found['prenom'],
+//             'role' => $user_found['role'],
+//             'login' => $user['login']
+//         ]);
+//         return true;
+//     }
+//     return false;
+// }
+
+function authenticate_user(array $user, $user_services): bool {
     global $session_services;
 
-    if (!isset($user_services[Users::GET_USERS->value])) {
-        var_dump($user_services);
-        die("GET_USERS function not found in user_services");
-    }
-
     $users = $user_services[Users::GET_USERS->value]();
-
     $user_found = $user_services[Users::FIND_USER->value]($users, $user);
 
     if ($user_found) {
-        $session_services[Sessions::SET_USER->value](
-            [
-                $user_found['email'], 
-                $user_found['nom'],
-                $user_found['prenom'],
-                $user_found['role']
-            ]
-            );
+        // Stockage complet de l'utilisateur
+        $session_services[Sessions::SET_USER->value]([
+            'email' => $user_found['email'],
+            'nom' => $user_found['nom'],
+            'prenom' => $user_found['prenom'],
+            'role' => $user_found['role'],
+            'authenticated' => true
+        ]);
         return true;
     }
-
     return false;
 }
 
@@ -262,7 +271,3 @@ function get_all_users() : array {
 
     return $user_services[Users::GET_USERS->value]();
 }
-
-
-
-handle_auth();

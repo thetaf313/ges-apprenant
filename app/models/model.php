@@ -4,12 +4,15 @@ namespace App\Models;
 require_once __DIR__ . '/../enums/FileServices.php';
 require_once __DIR__ . '/../enums/Paths.php';
 require_once __DIR__ . '/../enums/Users.php';
+require_once __DIR__ . '/../enums/Promotions.php';
+
 
 use App\Enums\FileServices;
 use App\Enums\Paths;
 use App\Enums\Users;
 
 require_once Paths::MODELS->resolve('user.model.php');
+require_once Paths::MODELS->resolve('promotion.model.php');
 
 $file_services = [
         FileServices::JSON_TO_ARRAY->value => function (): array {

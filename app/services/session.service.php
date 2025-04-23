@@ -32,7 +32,9 @@ $session_services = [
 
     Sessions::GET_ERRORS->value => function() use (&$session_services) : ?array {
         $session_services[Sessions::START_SESSION->value]();
-        return $_SESSION['errors'] ?? null;
+        $errors = $_SESSION['errors'] ?? null;
+        unset($_SESSION['errors']);
+        return $errors;
     },
 
     Sessions::SET_OLD_INPUT->value => function(array $inputs) use (&$session_services) : void {
@@ -53,7 +55,9 @@ $session_services = [
 
     Sessions::GET_ERROR_MESSAGE->value => function() use (&$session_services) : ? string {
         $session_services[Sessions::START_SESSION->value]();
-        return $_SESSION['error_message'] ?? '';
+        $error_message = $_SESSION['error_message'] ?? '';
+        unset($_SESSION['error_message']);
+        return $error_message;
     },
 
     Sessions::SET_FLASH_SUCCESS->value => function(string $flash_success) use (&$session_services) : void {
@@ -61,9 +65,11 @@ $session_services = [
         $_SESSION['flash_success'] = $flash_success;
     },
 
-    Sessions::GET_FLASH_SUCCESS->value => function() use (&$session_services) : ?string {
+    Sessions::GET_FLASH_SUCCESS->value => function() use (&$session_services) : string {
         $session_services[Sessions::START_SESSION->value]();
-        return $_SESSION['flash_success'] ?? '';
+        $message = $_SESSION['flash_success'] ?? '';
+        // unset($_SESSION['flash_success']);
+        return $message;
     },
 
     Sessions::SET_EMAIL_PASSWORD_TO_UPDATE->value => function(string $email) use (&$session_services) : void {
@@ -73,7 +79,9 @@ $session_services = [
 
     Sessions::GET_EMAIL_PASSWORD_TO_UPDATE->value => function() use (&$session_services) : string {
         $session_services[Sessions::START_SESSION->value]();
-        return $_SESSION['email_password_to_update'] ?? '';
+        $email_password_to_update = $_SESSION['email_password_to_update'] ?? '';
+        // unset($_SESSION['email_password_to_update']);
+        return $email_password_to_update;
     },
 
     Sessions::DESTROY_SESSION->value => function () use (&$session_services) : void {
@@ -83,25 +91,21 @@ $session_services = [
 ];
 
 
-
-
-// function start_session(): void {
-//     if (session_status() === PHP_SESSION_NONE) {
-//         session_start();
-//     }
-// }
-
-// function set_user(array $user): void {
-//     start_session();
-//     $_SESSION['user'] = $user;
-// }
-
-// function get_user(): ?array {
-//     start_session();
-//     return $_SESSION['user'] ?? null;
-// }
-
-// function logout(): void {
-//     start_session();
-//     session_destroy();
-// }
+/**
+ * Exécute un service de session
+ * 
+ * @param Sessions $service Le service à exécuter (enum)
+ * @param mixed ...$args Arguments à passer au service
+ * @return mixed
+ * 
+ * @throws \RuntimeException Si le service n'existe pas
+ */
+function session_service_exec(Sessions $service, ...$args) {
+    global $session_services;
+    
+    if (!isset($session_services[$service->value])) {
+        throw new \RuntimeException("Service de session non trouvé : " . $service->value);
+    }
+    
+    return $session_services[$service->value](...$args);
+}

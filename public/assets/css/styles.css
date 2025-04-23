@@ -154,7 +154,7 @@
   
   #form-container .message {
     /* margin-top: var(--negative-m-3); */
-    padding: 0.5rem;
+    padding: 0.6rem;
     width: 60%;
     border-left: var(--bd-3) solid;
     /* display: none; */

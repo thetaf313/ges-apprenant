@@ -1,4 +1,7 @@
 <?php
+
+use App\Enums\Routes;
+
 $title = 'Vérification Email';
 ?>
 
@@ -15,7 +18,7 @@ $title = 'Vérification Email';
         <div class="error message"><?= htmlspecialchars($error_message) ?></div>
     <?php endif; ?>
 
-    <form action="/?page=auth&action=verify-email" method="post">
+    <form action="<?= Routes::AUTH->resolve() ?>?action=verify-email" method="post">
         <h1>Vérification de l'adresse email</h1>
 
         <div class="form-group">

@@ -2,10 +2,14 @@
 namespace App\Controllers;
 
 use App\Enums\Paths;
+use App\Enums\Routes;
+use App\Enums\Sessions;
 
 require_once Paths::CONTROLLERS->resolve('error.controller.php');
-require_once Paths::CONTROLLERS->resolve('auth.controller.php');
 require_once Paths::CONTROLLERS->resolve('promotion.controller.php');
+require_once Paths::CONTROLLERS->resolve('auth.controller.php');
+require_once Paths::CONTROLLERS->resolve('home.controller.php');
+require_once Paths::CONTROLLERS->resolve('referentiel.controller.php');
 
 
 /**
@@ -13,13 +17,13 @@ require_once Paths::CONTROLLERS->resolve('promotion.controller.php');
  */
 
  function render_view(string $viewPath, string $layoutPath, array $data = []) : void {
-    extract($data); // Rend chaque clé de $data accessible comme variable
+    extract($data); 
 
-    ob_start(); // Démarre la capture de sortie
-    include Paths::VIEWS->resolve($viewPath); // Charge la vue
-    $content = ob_get_clean(); // Récupère le contenu capturé
+    ob_start();
+    include Paths::VIEWS->resolve($viewPath);
+    $content = ob_get_clean();
 
-    require Paths::LAYOUTS->resolve($layoutPath); // Charge le layout avec $content
+    require Paths::LAYOUTS->resolve($layoutPath); 
 }
 
 /**
@@ -42,6 +46,41 @@ function redirect_to_route(string $route, int $status_code = 302): void
 }
 
 /**
+ * Auth Middleware
+ * 
+ *  */
+function auth_middleware() {
+    global $session_services;
+
+    // Vérification de session
+    $user = $session_services[Sessions::GET_USER->value]();
+    
+    if ($user) {
+        // Utilisateur connecté - redirection
+        // redirect_to_route('/?page=promotion&action=list');
+        render_view('promotion/list_promotion_grid.html.php', 'grid.layout.php');
+        exit;
+    }
+
+    // Affichage formulaire de login
+    redirect_to_route(Routes::AUTH->resolve());
+    // render_view('auth/login.html.php', 'base.layout.php');
+    exit;
+}
+
+
+/**
+ * Redirige vers une route
+ * 
+ * @param Routes $route Route vers laquelle rediriger
+ * @param int $status_code Code HTTP de redirection
+ */
+// function redirect_to_route(Routes $route, int $status_code = 302): void {
+//     header('Location: ' . $route->resolve(), true, $status_code);
+//     exit;
+// }
+
+/**
  * Valide des données selon des règles
  * 
  * @param array $data Données à valider
@@ -58,7 +97,7 @@ function validate(array $data, array $rules): array {
         $fieldErrors = validate_field($field, $value, $fieldRules, $data);
         
         if (!empty($fieldErrors)) {
-            $errors[$field] = $fieldErrors[0]; // On ne garde que la première erreur
+            $errors[$field] = $fieldErrors[0];
         }
     }
     

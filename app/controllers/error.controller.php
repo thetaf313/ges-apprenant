@@ -4,13 +4,13 @@ use App\Enums\Paths;
 
 use function App\Controllers\render_view;
 
-function handle_request() {
+function handle_error() {
 
     $code = $_REQUEST['code'] ?? '';
 
     if ($code && $code==404) {
-        echo 'error';
         render_view('error/404.php', 'base.layout.php');
+        exit;
     }
 }
 
@@ -23,6 +23,3 @@ function error_forbidden(array $params = []) {
     header("HTTP/1.0 403 Forbidden");
     echo "Accès refusé";
 }
-
-
-handle_request();

@@ -6,38 +6,58 @@
             "prenom": "John",
             "email": "admin1@gmail.com",
             "password": "admin123",
-            "role": "Admin"
+            "role": "Admin",
+            "role_description": "Administrateur",
+            "picture": ""
         },
-
         {
             "matricule": "1111112",
             "nom": "Doe",
             "prenom": "Jane",
             "email": "admin2@gmail.com",
             "password": "admin123",
-            "role": "Admin"
+            "role": "Admin",
+            "role_description": "Administrateur",
+            "picture": ""
         }
     ],
-
     "promotions": [
         {
             "nom_promotion": "promotion 2025",
-            "referentiels": [],
-            "nb_apprenants": 180,
-            "date_debut": "06/02/2025",
-            "date_fin": "07/12/2025",
+            "referentiels": [
+                "developpement web\/mobile",
+                "developpement data",
+                "referent digital",
+                "assistant digital",
+                "aws & devops"
+            ],
+            "date_debut": "06\/02\/2025",
+            "date_fin": "07\/12\/2025",
             "etat": "active",
-            "photo": "/uploads/img_12dd23d323.jpg"
+            "photo": "\/uploads\/img_12dd23d323.jpg"
+        },
+        {
+            "nom_promotion": "promotion 2024",
+            "referentiels": [
+                "developpement web\/mobile",
+                "developpement data",
+                "referent digital",
+                "assistant digital",
+                "aws & devops"
+            ],
+            "date_debut": "06\/02\/2024",
+            "date_fin": "07\/12\/2024",
+            "etat": "inactive",
+            "photo": "\/uploads\/img_12dd23d323.jpg"
         }
     ],
-
     "referentiels": [
         {
-            "nom_referentiel": "dev web/mobile",
+            "nom_referentiel": "dev web\/mobile",
             "nb_modules": 8,
             "nb_apprenants": 50,
-            "description": "Developpement web/mobile ...",
-            "photo": "/uploads/img_12dd23d324.jpg"
+            "description": "Developpement web\/mobile ...",
+            "photo": "\/uploads\/img_12dd23d324.jpg"
         }
     ]
 }

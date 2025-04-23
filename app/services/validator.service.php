@@ -87,117 +87,92 @@ $validators_services = [
 ];
  */
 
-namespace App\Services;
-
-use App\Enums\Paths;
-use App\Enums\Validators;
-use App\translate\fr\FrErrorMessages;
-
-require_once __DIR__ . './../enums/Validators.php';
-require_once __DIR__ . './../translate/fr/error.fr.php';
-
-$validationMessages = [
-    'required' => FrErrorMessages::REQUIRED->value,
-    'email' => FrErrorMessages::EMAIL->value,
-    'min' => FrErrorMessages::MIN->value,
-    'max' => FrErrorMessages::MAX->value,
-    'numeric' => FrErrorMessages::NUMERIC->value,
-    'integer' => FrErrorMessages::INTEGER->value,
-    'date' => FrErrorMessages::DATE->value,
-    'regex' => FrErrorMessages::REGEX->value,
-    'in' => FrErrorMessages::IN->value,
-    'same' => FrErrorMessages::SAME->value
-];
-
-$validators_services = [];
-
-// 1. Définir d'abord le message d'erreur
-$validators_services[Validators::GET_VALIDATION_MESSAGE->value] = function (string $field, string $rule, $param = null) use (&$validationMessages) {
-    $template = $validationMessages[$rule] ?? 'Validation failed for field %s';
-    return str_contains($template, '%s')
-        ? sprintf($template, $field, $param)
-        : str_replace('%s', $field, $template);
-};
-
-// 2. Les validateurs de base
-$validators_services[Validators::REQUIRED->value] = function ($value) {
-    return !empty(trim($value ?? ''));
-};
-$validators_services[Validators::EMAIL->value] = function ($value) {
-    return filter_var($value, FILTER_VALIDATE_EMAIL);
-};
-$validators_services[Validators::MIN->value] = function ($value, $min) {
-    return strlen(trim($value ?? '')) >= (int)$min;
-};
-$validators_services[Validators::MAX->value] = function ($value, $max) {
-    return strlen(trim($value ?? '')) <= (int)$max;
-};
-$validators_services[Validators::NUMERIC->value] = function ($value) {
-    return is_numeric($value);
-};
-$validators_services[Validators::INTEGER->value] = function ($value) {
-    return filter_var($value, FILTER_VALIDATE_INT);
-};
-$validators_services[Validators::DATE->value] = function ($value) {
-    return (bool)strtotime($value);
-};
-$validators_services[Validators::REGEX->value] = function ($value, $pattern) {
-    return preg_match($pattern, $value);
-};
-$validators_services[Validators::IN->value] = function ($value, $options) {
-    return in_array($value, explode(',', $options));
-};
-$validators_services[Validators::SAME->value] = function ($value, $field, $data) {
-    return $value === ($data[$field] ?? null);
-};
-
-// 3. Validation d’un seul champ
-$validators_services[Validators::VALIDATE_FIELD->value] = function (string $field, $value, $rules, array $data) use (&$validators_services) {
-    $rulesArray = is_array($rules) ? $rules : explode('|', $rules);
-    $errors = [];
-
-    foreach ($rulesArray as $rule) {
-        [$ruleName, $param] = array_pad(explode(':', $rule, 2), 2, null);
-        $validator = $validators_services[$ruleName] ?? null;
-
-        if (!$validator) continue;
-
-        $args = [$value];
-        if (in_array($ruleName, [Validators::MIN->value, Validators::MAX->value, Validators::REGEX->value, Validators::IN->value])) {
-            $args[] = $param;
-        } elseif ($ruleName === Validators::SAME->value) {
-            $args[] = $param;
-            $args[] = $data;
-        }
-
-        if (!call_user_func_array($validator, $args)) {
-            $errors[] = $validators_services[Validators::GET_VALIDATION_MESSAGE->value]($field, $ruleName, $param);
-        }
-    }
-
-    return $errors;
-};
-
-// 4. Ajouter un validateur personnalisé
-$validators_services[Validators::ADD_VALIDATOR->value] = function (string $name, callable $validator, ?string $message = null) use (&$validators_services, &$validationMessages) {
-    $validators_services[$name] = $validator;
-    if ($message) {
-        $validationMessages[$name] = $message;
-    }
-};
-
-// 5. Validation globale
-$validators_services[Validators::VALIDATE->value] = function (array $data, array $rules) use (&$validators_services) {
-    $result = ['is_valid' => true, 'errors' => []];
-
-    foreach ($rules as $field => $fieldRules) {
-        $value = $data[$field] ?? null;
-        $fieldErrors = $validators_services[Validators::VALIDATE_FIELD->value]($field, $value, $fieldRules, $data);
-        if (!empty($fieldErrors)) {
-            $result['errors'][$field] = $fieldErrors[0]; // première erreur
-            $result['is_valid'] = false;
-        }
-    }
-
-    return $result;
-};
+ namespace App\Services;
+ 
+ use App\Enums\Paths;
+ use App\Enums\Validators;
+ use App\translate\fr\FrErrorMessages;
+ 
+ require_once __DIR__ . './../enums/Validators.php';
+ require_once __DIR__ . './../translate/fr/error.fr.php';
+ 
+ $validationMessages = [
+     'required' => FrErrorMessages::REQUIRED->value,
+     'email' => FrErrorMessages::EMAIL->value,
+     'min' => FrErrorMessages::MIN->value,
+     'max' => FrErrorMessages::MAX->value,
+     'numeric' => FrErrorMessages::NUMERIC->value,
+     'integer' => FrErrorMessages::INTEGER->value,
+     'date' => FrErrorMessages::DATE->value,
+     'regex' => FrErrorMessages::REGEX->value,
+     'in' => FrErrorMessages::IN->value,
+     'same' => FrErrorMessages::SAME->value
+ ];
+ 
+ $validators_services = [];
+ 
+ $validators_services[Validators::GET_VALIDATION_MESSAGE->value] = function (string $field, string $rule, $param = null) use (&$validationMessages) {
+     $template = $validationMessages[$rule] ?? 'Validation failed for field %s';
+     return str_contains($template, '%s')
+         ? sprintf($template, $field, $param)
+         : str_replace('%s', $field, $template);
+ };
+ 
+ $validators_services[Validators::REQUIRED->value] = fn($value) => !empty(trim($value ?? ''));
+ $validators_services[Validators::EMAIL->value] = fn($value) => filter_var($value, FILTER_VALIDATE_EMAIL);
+ $validators_services[Validators::MIN->value] = fn($value, $min) => strlen(trim($value ?? '')) >= (int)$min;
+ $validators_services[Validators::MAX->value] = fn($value, $max) => strlen(trim($value ?? '')) <= (int)$max;
+ $validators_services[Validators::NUMERIC->value] = fn($value) => is_numeric($value);
+ $validators_services[Validators::INTEGER->value] = fn($value) => filter_var($value, FILTER_VALIDATE_INT);
+ $validators_services[Validators::DATE->value] = fn($value) => (bool)strtotime($value);
+ $validators_services[Validators::REGEX->value] = fn($value, $pattern) => preg_match($pattern, $value);
+ $validators_services[Validators::IN->value] = fn($value, $options) => in_array($value, explode(',', $options));
+ $validators_services[Validators::SAME->value] = fn($value, $field, $data) => $value === ($data[$field] ?? null);
+ 
+ // Validation d’un seul champ
+ $validators_services[Validators::VALIDATE_FIELD->value] = function (string $field, $value, $rules, array $data) use (&$validators_services) {
+     $rulesArray = is_array($rules) ? $rules : explode('|', $rules);
+ 
+     return array_reduce($rulesArray, function ($errors, $rule) use ($field, $value, $data, &$validators_services) {
+         [$ruleName, $param] = array_pad(explode(':', $rule, 2), 2, null);
+         $validator = $validators_services[$ruleName] ?? null;
+         if (!$validator) return $errors;
+ 
+         $args = [$value];
+         if (in_array($ruleName, [Validators::MIN->value, Validators::MAX->value, Validators::REGEX->value, Validators::IN->value])) {
+             $args[] = $param;
+         } elseif ($ruleName === Validators::SAME->value) {
+             $args[] = $param;
+             $args[] = $data;
+         }
+ 
+         if (!call_user_func_array($validator, $args)) {
+             $errors[] = $validators_services[Validators::GET_VALIDATION_MESSAGE->value]($field, $ruleName, $param);
+         }
+ 
+         return $errors;
+     }, []);
+ };
+ 
+ $validators_services[Validators::ADD_VALIDATOR->value] = function (string $name, callable $validator, ?string $message = null) use (&$validators_services, &$validationMessages) {
+     $validators_services[$name] = $validator;
+     if ($message) {
+         $validationMessages[$name] = $message;
+     }
+ };
+ 
+ // Validation globale sans foreach
+ $validators_services[Validators::VALIDATE->value] = function (array $data, array $rules) use (&$validators_services) {
+     return array_reduce(array_keys($rules), function ($result, $field) use (&$validators_services, $data, $rules) {
+         $value = $data[$field] ?? null;
+         $fieldErrors = $validators_services[Validators::VALIDATE_FIELD->value]($field, $value, $rules[$field], $data);
+ 
+         if (!empty($fieldErrors)) {
+             $result['errors'][$field] = $fieldErrors[0]; // première erreur
+             $result['is_valid'] = false;
+         }
+ 
+         return $result;
+     }, ['is_valid' => true, 'errors' => []]);
+ };
+ 
