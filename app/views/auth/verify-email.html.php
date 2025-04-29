@@ -25,7 +25,7 @@ $title = 'Vérification Email';
             <label for="login">Email</label>
             <input
                 type="text"
-                name="login"
+                name="login"Liste
                 placeholder="Entrer votre email"
                 value="<?= htmlspecialchars($old_input['login'] ?? '') ?>"
             />

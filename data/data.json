@@ -33,8 +33,9 @@
             ],
             "date_debut": "06\/02\/2025",
             "date_fin": "07\/12\/2025",
-            "etat": "active",
-            "photo": "\/uploads\/img_12dd23d323.jpg"
+            "status": "active",
+            "etat": "en cours",
+            "photo": "\/uploads\/img-promo-2025.jpg"
         },
         {
             "nom_promotion": "promotion 2024",
@@ -47,17 +48,155 @@
             ],
             "date_debut": "06\/02\/2024",
             "date_fin": "07\/12\/2024",
-            "etat": "inactive",
-            "photo": "\/uploads\/img_12dd23d323.jpg"
+            "status": "inactive",
+            "etat": "termine",
+            "photo": "\/uploads\/img-promo-2025.jpg"
+        },
+        {
+            "nom_promotion": "promotion 2023",
+            "referentiels": [
+                "developpement web\/mobile",
+                "developpement data",
+                "referent digital",
+                "assistant digital",
+                "aws & devops"
+            ],
+            "date_debut": "06\/02\/2023",
+            "date_fin": "07\/12\/2023",
+            "status": "inactive",
+            "etat": "termine",
+            "photo": "\/uploads\/img-promo-2025.jpg"
+        },
+        {
+            "nom_promotion": "promotion 2022",
+            "referentiels": [
+                "developpement web\/mobile",
+                "developpement data",
+                "referent digital",
+                "assistant digital",
+                "aws & devops"
+            ],
+            "date_debut": "06\/02\/2022",
+            "date_fin": "07\/12\/2022",
+            "status": "inactive",
+            "etat": "termine",
+            "photo": "\/uploads\/img-promo-2025.jpg"
+        },
+        {
+            "nom_promotion": "promotion 2026",
+            "date_debut": "06\/02\/2026",
+            "date_fin": "07\/02\/2026",
+            "photo": "\/uploads\/promotions\/promo_680ece1d8dafa.jpg",
+            "referentiels": [
+                "developpement web\/mobile",
+                "developpement data"
+            ],
+            "status": "inactive",
+            "etat": "en attente"
         }
     ],
     "referentiels": [
         {
-            "nom_referentiel": "dev web\/mobile",
+            "nom_referentiel": "developpement web\/mobile",
             "nb_modules": 8,
             "nb_apprenants": 50,
-            "description": "Developpement web\/mobile ...",
-            "photo": "\/uploads\/img_12dd23d324.jpg"
+            "description": "D\u00e9veloppement web et mobile...",
+            "photo": "\/uploads\/referentiels\/img-ref-dev-web-mobile.jpg"
+        },
+        {
+            "nom_referentiel": "developpement data",
+            "nb_modules": 8,
+            "nb_apprenants": 25,
+            "description": "D\u00e9veloppement data...",
+            "photo": "\/uploads\/referentiels\/img-ref-dev-data.jpg"
+        },
+        {
+            "nom_referentiel": "referent digital",
+            "nb_modules": 8,
+            "nb_apprenants": 50,
+            "description": "R\u00e9f\u00e9rent digital...",
+            "photo": "\/uploads\/referentiels\/img-ref-dig.jpg"
+        },
+        {
+            "nom_referentiel": "assistant digital",
+            "nb_modules": 8,
+            "nb_apprenants": 25,
+            "description": "Assistant digital...",
+            "photo": "\/uploads\/referentiels\/img-ref-hackeuse.jpg"
+        },
+        {
+            "nom_referentiel": "aws & devops",
+            "nb_modules": 8,
+            "nb_apprenants": 25,
+            "description": "AWS & DevOps...",
+            "photo": "\/uploads\/referentiels\/img-ref-aws-devops.jpg"
+        },
+        {
+            "nom_referentiel": "ref 100",
+            "description": "rgriwgorogorgr",
+            "photo": "\/uploads\/promotions\/promo_680f4156b767b.jpg",
+            "nb_modules": 8,
+            "nb_apprenants": 0,
+            "capacite": 30,
+            "nb_sessions": 1
+        }
+    ],
+    "apprenants": [
+        {
+            "matricule": "2025A001",
+            "nom": "Fall",
+            "prenom": "Amina",
+            "email": "amina.fall@gmail.com",
+            "password": "apprenant123",
+            "adresse": "DAKAR, Senegal",
+            "telephone": "770000000",
+            "role": "Apprenant",
+            "referentiel": "developpement web\/mobile",
+            "promotion": "promotion 2025",
+            "status": "actif",
+            "photo": "\/uploads\/amina-fall.jpg"
+        },
+        {
+            "matricule": "2025A002",
+            "nom": "Ba",
+            "prenom": "Moussa",
+            "email": "moussa.ba@gmail.com",
+            "password": "apprenant123",
+            "adresse": "DAKAR, Senegal",
+            "telephone": "770000001",
+            "role": "Apprenant",
+            "referentiel": "developpement data",
+            "promotion": "promotion 2025",
+            "status": "actif",
+            "photo": "\/uploads\/moussa-ba.jpg"
+        },
+        {
+            "matricule": "2025A003",
+            "nom": "Sow",
+            "prenom": "Fatou",
+            "email": "fatou.sow@gmail.com",
+            "password": "apprenant123",
+            "adresse": "DAKAR, Senegal",
+            "telephone": "770000002",
+            "role": "Apprenant",
+            "referentiel": "referent digital",
+            "promotion": "promotion 2025",
+            "status": "actif",
+            "photo": "\/uploads\/fatou-sow.jpg"
+        },
+        {
+            "matricule": "2025A004",
+            "nom": "Ndiaye",
+            "prenom": "Omar",
+            "email": "omar.ndiaye@gmail.com",
+            "password": "apprenant123",
+            "adresse": "DAKAR, Senegal",
+            "telephone": "770000003",
+            "role": "Apprenant",
+            "referentiel": "referent digital",
+            "promotion": "promotion 2025",
+            "status": "actif",
+            "photo": "\/uploads\/omar-ndiaye.jpg"
         }
     ]
 }

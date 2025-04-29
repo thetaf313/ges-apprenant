@@ -1,3 +1,7 @@
+<?php
+
+use App\Enums\Routes;
+?>
 
     <!-- Section de contenu -->
     <section class="content view-list">
@@ -5,12 +9,12 @@
             <div class="content-header">
               <div class="title">
                 <h1>Promotion</h1>
-                <p>180 apprenants</p>
+                <p><?= $stats['num_apprenants'] ?> apprenants</p>
               </div>
             </div>
             <div class="promo-content-list-bar">
-              <div class="search-filter-bar">
-                <div class="search-box">
+              <div class="search-filter-bar contents-cards-bar">
+                <!-- <div class="search-box">
                   <span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -36,16 +40,55 @@
                     </svg>
                   </span>
                   <input type="text" placeholder="Rechercher..." />
-                </div>
-                <select name="" id="">
+                </div> -->
+                <!-- <select name="" id="">
                   <option value="0">Filtre par classe</option>
                   <option value="">Dev Web/Mobile</option>
-                </select>
-                <select name="" id="">
+                </select> -->
+                <!-- <select name="" id="">
                   <option value="">Filtre par status</option>
                   <option value="">Active</option>
                   <option value="">Inactive</option>
+                </select> -->
+                <form action="" method="get">
+              <div class="search-box">
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g class="search-outline">
+                      <g
+                        fill=""
+                        fill-rule="evenodd"
+                        class="Vector"
+                        clip-rule="evenodd"
+                      >
+                        <path
+                          d="M11 17a6 6 0 1 0 0-12a6 6 0 0 0 0 12m0 2a8 8 0 1 0 0-16a8 8 0 0 0 0 16"
+                        />
+                        <path
+                          d="M15.32 15.29a1 1 0 0 1 1.414.005l3.975 4a1 1 0 0 1-1.418 1.41l-3.975-4a1 1 0 0 1 .004-1.414Z"
+                        />
+                      </g>
+                    </g>
+                  </svg>
+                </span>
+                <input type="text" name="search" placeholder="Rechercher une promotion" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+              </div>
+              <div class="select-box">
+                <select name="filter">
+                  <option value="">Tous</option>
+                  <option value="active" <?= (($_GET['filter'] ?? '') === 'active') ? 'selected' : '' ?>>Active</option>
+                  <option value="inactive" <?= (($_GET['filter'] ?? '') === 'inactive') ? 'selected' : '' ?>>Inactive</option>
                 </select>
+                <input type="hidden" name="view" value="list" />
+              </div>
+              <button type="submit">Rechercher</button>
+              </form>
+
               </div>
               <!-- <div class="add-promo">
                 <a href="#">
@@ -63,7 +106,7 @@
                   Ajouter promotion</a
                 >
               </div> -->
-              <label for="modal-toggle" class="add-promo-btn">
+              <a href="<?= Routes::PROMOTION->resolve() ?>?action=add" class="add-promo-btn">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -76,13 +119,13 @@
                   />
                 </svg>
                 Ajouter une promotion
-              </label>
+              </a>
             </div>
 
             <div class="stat-cards-container view-list">
               <div class="stat-card">
                 <div class="stat-info">
-                  <h1>180</h1>
+                  <h1><?= $stats['num_apprenants'] ?? 0 ?></h1>
                   <p>Apprenants</p>
                 </div>
                 <div class="stat-icon">
@@ -102,7 +145,7 @@
 
               <div class="stat-card">
                 <div class="stat-info">
-                  <h1>5</h1>
+                  <h1><?= $stats['num_referentiels'] ?? 0 ?></h1>
                   <p>Référentiels</p>
                 </div>
                 <div class="stat-icon">
@@ -470,29 +513,44 @@
                   </tr>
                 </thead>
                 <tbody>
+                <?php foreach ($promotions as $promo): ?>
                   <!-- Ligne 1 -->
                   <tr>
                     <td>
                       <img
-                        src="../assets/images/img-promo-2025.jpg"
+                        src="<?= $promo['photo'] ?>"
                         class="promo-img"
                         alt="Promo 2025"
                       />
                     </td>
-                    <td>Promotion 2025</td>
-                    <td>01/02/2025</td>
-                    <td>01/12/2025</td>
+                    <td><?= $promo['nom_promotion'] ?></td>
+                    <td><?= $promo['date_debut'] ?></td>
+                    <td><?= $promo['date_fin'] ?></td>
                     <td>
-                      <span class="badge green">DEV WEB/MOBILE</span>
-                      <span class="badge blue">REF DIG</span>
-                      <span class="badge purple">DEV DATA</span>
-                      <span class="badge orange">AWS</span>
-                      <span class="badge pink">HACKEUSE</span>
+                      <?php foreach ($promo['referentiels'] as $referentiel): ?>
+                        <?php if ($referentiel === 'developpement web/mobile') : ?>
+                        <span class="badge green"><?= substr(explode(' ', $referentiel)[0], 0, 3) . ' ' . explode(' ', $referentiel)[1];?></span>
+                        <?php elseif ($referentiel === 'referent digital'): ?>
+                        <span class="badge blue"><?= $referentiel ?></span>
+                        <?php elseif ($referentiel === 'developpement data'): ?>
+                          <span class="badge purple"><?= $referentiel ?></span>
+                        <?php elseif ($referentiel === 'aws & devops'): ?>
+                          <span class="badge orange"><?= $referentiel ?></span>
+                        <?php elseif ($referentiel === 'assistant digital'): ?>
+                          <span class="badge pink"><?= 'hackeuse' ?></span>
+                        <?php endif; ?>
+                        <!-- <span class="badge green">DEV WEB/MOBILE</span>
+                        <span class="badge blue">REF DIG</span>
+                        <span class="badge purple">DEV DATA</span>
+                        <span class="badge orange">AWS</span>
+                        <span class="badge pink">HACKEUSE</span> -->
+                      <?php endforeach; ?> 
                     </td>
-                    <td><span class="status active">Active</span></td>
+                    <td><span class="status <?= $promo['status'] === 'active' ? 'active' : 'inactive'?>"><?= $promo['status'] ?></span></td>
                     <td><span class="action">⋯</span></td>
                   </tr>
-                  <!-- Ligne 2 -->
+                  <?php endforeach; ?> 
+<!--                   
                   <tr>
                     <td>
                       <img
@@ -514,7 +572,7 @@
                     <td><span class="status inactive">Inactive</span></td>
                     <td><span class="action">⋯</span></td>
                   </tr>
-                  <!-- Ligne 3 -->
+                  
                   <tr>
                     <td>
                       <img
@@ -536,7 +594,7 @@
                     <td><span class="status inactive">Inactive</span></td>
                     <td><span class="action">⋯</span></td>
                   </tr>
-                  <!-- Ligne 4 -->
+                  
                   <tr>
                     <td>
                       <img
@@ -558,7 +616,7 @@
                     <td><span class="status inactive">Inactive</span></td>
                     <td><span class="action">⋯</span></td>
                   </tr>
-                  <!-- Ligne 5 -->
+                  
                   <tr>
                     <td>
                       <img
@@ -579,26 +637,31 @@
                     </td>
                     <td><span class="status inactive">Inactive</span></td>
                     <td><span class="action">⋯</span></td>
-                  </tr>
+                  </tr> -->
                 </tbody>
               </table>
 
               <!-- Pagination -->
               <div class="pagination">
-                <div class="page-selector">
-                  <label for="page">page</label>
-                  <select id="page">
-                    <option>5</option>
-                  </select>
+                <div class="page-info">
+                    Affichage de <?= ($page - 1) * $limit + 1 ?> à <?= min($page * $limit, $total) ?> sur <?= $total ?> promotions
                 </div>
-                <div class="page-info">1 à 5 pour 8</div>
                 <div class="page-nav">
-                  <button class="page-btn"><</button>
-                  <button class="page-btn active">1</button>
-                  <button class="page-btn">2</button>
-                  <button class="page-btn">></button>
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?= $page - 1 ?>&filter=<?= urlencode($_GET['filter']?? '') ?>&search=<?= urlencode($search) ?>&limit=<?= $limit ?>&view=<?= $view ?>" class="page-btn">Précédent</a>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $pages; $i++): ?>
+                        <a href="?page=<?= $i ?>&filter=<?= urlencode($_GET['filter']?? '') ?>&search=<?= urlencode($search) ?>&limit=<?= $limit ?>&view=<?= $view ?>" class="page-btn <?= $i === $page ? 'active' : '' ?>">
+                            <?= $i ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $pages): ?>
+                        <a href="?page=<?= $page + 1 ?>&filter=<?= urlencode($_GET['filter'] ?? '') ?>&search=<?= urlencode($search) ?>&limit=<?= $limit ?>&view=<?= $view ?>" class="page-btn">Suivant</a>
+                    <?php endif; ?>
                 </div>
-              </div>
+            </div>
             </div>
           </div>
         </section>

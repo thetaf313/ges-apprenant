@@ -8,6 +8,7 @@ enum Routes: string {
     // case LOGOUT = '/logout';
     case PROMOTION = '/promotion';
     case REFERENTIEL = '/referentiel';
+    case APPRENANT = '/apprenant';
     case ERROR = '/error';
     
     public function resolve(string $path = ''): string {

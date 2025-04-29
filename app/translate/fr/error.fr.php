@@ -12,7 +12,13 @@ enum FrErrorMessages:string {
     case DATE = 'Le champ %s doit être une date valide';
     case REGEX = 'Le format du champ %s est invalide';
     case IN = 'Le champ %s doit être parmi: %s';
-    case SAME = 'Le champ %s doit correspondre au champ %s';
+    case SAME = 'Les deux champs ne correspondent pas';
+    case DATE_AFTER = 'la date (%s) doit être postérieure à la date de début.';
+    case DATE_FORMAT = 'la date doit etre au format jj/mm/aaaa (jour/mois/annee)';
+    case FILE_MIME = 'Le fichier %s doit être de type JPG ou PNG.';
+    case FILE_SIZE = 'Le fichier %s ne doit pas dépasser 2MB.';
+    case UNIQUE_PROMOTION = "La promotion existe déjà.";
+    case VALID_REFERENTIELS = "Le référentiel sélectionné pour '%s' n'est pas valide.";
 
     case LOGIN_ERROR = 'Login et/ou mot de passe incorrect !';
     case VERIFY_EMAIL_ERROR = 'Cette adresse email n\'existe pas.';

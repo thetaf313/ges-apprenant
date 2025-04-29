@@ -2,14 +2,18 @@
 namespace App\Controllers;
 
 use App\Enums\Paths;
+use App\Enums\Promotions;
 use App\Enums\Routes;
 use App\Enums\Sessions;
 
+use function App\Models\promotion_service_exec;
+
 require_once Paths::CONTROLLERS->resolve('error.controller.php');
-require_once Paths::CONTROLLERS->resolve('promotion.controller.php');
 require_once Paths::CONTROLLERS->resolve('auth.controller.php');
+require_once Paths::CONTROLLERS->resolve('promotion.controller.php');
 require_once Paths::CONTROLLERS->resolve('home.controller.php');
 require_once Paths::CONTROLLERS->resolve('referentiel.controller.php');
+require_once Paths::CONTROLLERS->resolve('apprenant.controller.php');
 
 
 /**
@@ -17,7 +21,9 @@ require_once Paths::CONTROLLERS->resolve('referentiel.controller.php');
  */
 
  function render_view(string $viewPath, string $layoutPath, array $data = []) : void {
-    extract($data); 
+    extract($data);
+
+    $stats = promotion_service_exec(Promotions::GET_GLOBAL_STATS);
 
     ob_start();
     include Paths::VIEWS->resolve($viewPath);
@@ -45,40 +51,185 @@ function redirect_to_route(string $route, int $status_code = 302): void
     exit;
 }
 
+// function save_photo(array $file): string|null {
+//     // Vérifie qu'un fichier a bien été envoyé
+//     if (!isset($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+//         return null;
+//     }
+
+//     $allowedTypes = ['image/jpeg', 'image/png'];
+//     $maxSize = 2 * 1024 * 1024; // 2 MB
+
+//     if (!in_array($file['type'], $allowedTypes)) {
+//         return null;
+//     }
+
+//     if ($file['size'] > $maxSize) {
+//         return null;
+//     }
+
+//     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+//     $newFileName = 'img_' . uniqid() . '.' . $extension;
+
+//     $destination = __DIR__ . '/../../public/uploads/' . $newFileName;
+
+//     if (move_uploaded_file($file['tmp_name'], $destination)) {
+//         return '/uploads/' . $newFileName;
+//     }
+
+//     return null;
+// }
+
+/**
+ * Sauvegarde le fichier photo uploadé
+ * @param array $file Fichier uploadé
+ * @return string|null Chemin relatif du fichier ou null en cas d'échec
+ */
+// function save_photo(array $file): ?string {
+//     // Vérifications de base
+//     if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+//         return null;
+//     }
+
+//     // Configuration
+//     $uploadDir = __DIR__ . '/../../public/uploads/promotions/';
+//     $allowedExtensions = ['jpg', 'jpeg', 'png'];
+//     $maxFileSize = 2 * 1024 * 1024; // 2MB
+
+//     // Vérification de la taille
+//     if ($file['size'] > $maxFileSize) {
+//         return null;
+//     }
+
+//     // Vérification de l'extension
+//     $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+//     if (!in_array($fileExtension, $allowedExtensions)) {
+//         return null;
+//     }
+
+//     // Création du répertoire si inexistant
+//     if (!is_dir($uploadDir)) {
+//         mkdir($uploadDir, 0755, true);
+//     }
+
+//     // Génération d'un nom de fichier unique
+//     $filename = 'promo_' . uniqid() . '.' . $fileExtension;
+//     $destination = $uploadDir . $filename;
+
+//     // Déplacement du fichier
+//     if (move_uploaded_file($file['tmp_name'], $destination)) {
+//         return '/uploads/promotions/' . $filename;
+//     }
+
+//     return null;
+// }
+
+// function save_photo(array $file): ?string
+// {
+//     if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
+//         return null;
+//     }
+
+//     // Vérifier que le type MIME est correct (image/jpeg ou image/png)
+//     $mimeType = mime_content_type($file['tmp_name']);
+//     if (!in_array($mimeType, ['image/jpeg', 'image/png'])) {
+//         return null;
+//     }
+
+//     // Vérifier la taille maximale (2MB = 2 * 1024 * 1024 octets)
+//     if ($file['size'] > 2 * 1024 * 1024) {
+//         return null;
+//     }
+
+//     // Définir le répertoire d'upload
+//     $uploadDir = __DIR__ . '/../../public/uploads/promotions/';
+//     if (!is_dir($uploadDir)) {
+//         mkdir($uploadDir, 0755, true);
+//     }
+
+//     // Générer un nom de fichier unique
+//     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+//     $newFilename = uniqid('promo_', true) . '.' . strtolower($extension);
+
+//     $destinationPath = $uploadDir . $newFilename;
+
+//     // Déplacer le fichier temporaire vers uploads/
+//     if (move_uploaded_file($file['tmp_name'], $destinationPath)) {
+//         // Retourner le chemin relatif pour enregistrer dans data.json
+//         return '/uploads/promotions/' . $newFilename;
+//     }
+
+//     // En cas d'échec
+//     return null;
+// }
+
+function save_photo(array $file): ?string {
+    if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $baseDir = __DIR__ . '/../../public/uploads/promotions/';
+    if (!is_dir($baseDir)) {
+        if (!mkdir($baseDir, 0755, true)) {
+            error_log("Impossible de créer le dossier : " . $baseDir);
+            return null;
+        }
+    }
+
+    $allowedExtensions = ['jpg', 'jpeg', 'png'];
+    $maxFileSize = 2 * 1024 * 1024;
+
+    if ($file['size'] > $maxFileSize) {
+        return null;
+    }
+
+    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($fileExtension, $allowedExtensions)) {
+        return null;
+    }
+
+    $filename = 'promo_' . uniqid() . '.' . $fileExtension;
+    $destination = $baseDir . $filename;
+
+    error_log('Destination: ' . $destination);
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        error_log("Échec de move_uploaded_file vers : " . $destination);
+        return null;
+    }
+
+    chmod($destination, 0644);
+
+    return '/uploads/promotions/' . $filename;
+}
+
+
+
+
 /**
  * Auth Middleware
  * 
  *  */
-function auth_middleware() {
-    global $session_services;
+// function auth_middleware() {
+//     global $session_services;
 
-    // Vérification de session
-    $user = $session_services[Sessions::GET_USER->value]();
+//     // Vérification de session
+//     $user = $session_services[Sessions::GET_USER->value]();
     
-    if ($user) {
-        // Utilisateur connecté - redirection
-        // redirect_to_route('/?page=promotion&action=list');
-        render_view('promotion/list_promotion_grid.html.php', 'grid.layout.php');
-        exit;
-    }
+//     if (!$user) {
+//         // Utilisateur connecté - redirection
+//         // redirect_to_route('/?page=promotion&action=list');
+//         redirect_to_route(Routes::AUTH->resolve());
+//         // render_view('promotion/list_promotion_grid.html.php', 'grid.layout.php');
+//         exit;
+//     }
 
-    // Affichage formulaire de login
-    redirect_to_route(Routes::AUTH->resolve());
-    // render_view('auth/login.html.php', 'base.layout.php');
-    exit;
-}
-
-
-/**
- * Redirige vers une route
- * 
- * @param Routes $route Route vers laquelle rediriger
- * @param int $status_code Code HTTP de redirection
- */
-// function redirect_to_route(Routes $route, int $status_code = 302): void {
-//     header('Location: ' . $route->resolve(), true, $status_code);
+//     // Affichage formulaire de login
+//     // redirect_to_route(Routes::PROMOTION->resolve());
+//     render_view('promotion/list_promotion_grid.html.php', 'grid.layout.php');
 //     exit;
 // }
+
 
 /**
  * Valide des données selon des règles

@@ -105,7 +105,7 @@ function process_login(): void {
         exit;
     }
     $session_services[Sessions::SET_ERROR_MESSAGE->value](FrErrorMessages::LOGIN_ERROR->value);
-    redirect_to_route(Routes::PROMOTION->resolve());
+    redirect_to_route(Routes::AUTH->resolve());
     exit;
 }
 
