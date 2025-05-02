@@ -6,6 +6,7 @@ enum Promotions:string {
     case FIND_ALL_PROMOTIONS = 'find_all_promotions';
     case FIND_ALL_PROMOTIONS_FILTER = 'find_all_promotions_filter';
     case FIND_ACTIVE_PROMOTION = 'find_active_promotion';
+    case FIND_CURRENT_PROMOTION = 'find_current_promotion';
     case FIND_PROMOTION_BY_NAME = 'find_promotion_by_name';
     case CHANGE_PROMOTION_STATUS = 'change_promotion_status';
     case SAVE_PROMOTION = 'save_promotion';

@@ -12,6 +12,7 @@ use App\Enums\Routes;
     <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/add-promo.styles.css" />
     <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/add_referentiel.styles.css" />
     <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/list_apprenants.styles.css" />
+    <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/add_apprenants.styles.css" />
 
 
   </head>

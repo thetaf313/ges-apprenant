@@ -4,6 +4,8 @@ namespace App\Enums;
 enum Paths: string {
     case ROUTE = __DIR__ . '/../route/route.web.php';
     case DATA = __DIR__ . '/../../data/data.json';
+    // case USER_DATA_FILE = 'users.json';
+    case AUDIT_LOG_FILE = __DIR__ . '/../../data/audit.log';
 
     case VIEWS = __DIR__ . '/../views/';
     case LAYOUTS = __DIR__ . '/../views/layout/';

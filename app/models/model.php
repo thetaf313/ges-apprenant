@@ -15,6 +15,7 @@ require_once Paths::MODELS->resolve('user.model.php');
 require_once Paths::MODELS->resolve('promotion.model.php');
 require_once Paths::MODELS->resolve('referentiel.model.php');
 require_once Paths::MODELS->resolve('apprenant.model.php');
+require_once Paths::MODELS->resolve('auth.model.php');
 
 $file_services = [
         FileServices::JSON_TO_ARRAY->value => function (): array {

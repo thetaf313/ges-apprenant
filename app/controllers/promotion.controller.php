@@ -19,8 +19,6 @@ use function App\Services\session_service_exec;
  */
 function handle_promotion(): void {
     
-    // auth_middleware();
-    
     $action = $_REQUEST['action'] ?? 'list';
     
     match($action) {
@@ -48,8 +46,6 @@ function get_all_promotions(): void {
     $page = isset($_REQUEST['page']) ? (int) $_REQUEST['page'] : 1;
     $view = trim($_REQUEST['view'] ?? '');
 
-    // error_log(print_r($promotions));
-    // die;
     $data = $promotion_services[Promotions::FIND_ALL_PROMOTIONS_FILTER->value]($filter, $search, $page, $limit);
 
     $data['page'] = $page;
@@ -241,42 +237,6 @@ function add_referentiel_to_promotion(): void {
 function validate_promotion() {
 
 }
-
-
-// function validate_promotion(array $data, array $allPromotions): array {
-//     global $validators_services;
-
-//     // Ajouter une règle personnalisée pour vérifier l'unicité du nom
-//     $validators_services['unique_nom'] = function ($value) use ($allPromotions) {
-//         return !in_array($value, array_column($allPromotions, 'nom'));
-//     };
-
-//     $validators_services[Validators::ADD_VALIDATOR->value](
-//         'unique_nom',
-//         $validators_services['unique_nom'],
-//         'Le nom de la promotion existe déjà'
-//     );
-
-//     // Ajouter une règle personnalisée pour comparer les dates
-//     $validators_services['date_order'] = function ($value, $field, $data) {
-//         return strtotime($value) >= strtotime($data[$field] ?? '');
-//     };
-
-//     $validators_services[Validators::ADD_VALIDATOR->value](
-//         'date_order',
-//         $validators_services['date_order'],
-//         'La date de fin doit être postérieure à la date de début'
-//     );
-
-//     $rules = [
-//         'nom' => 'required|min:3|unique_nom',
-//         'dateDebut' => 'required|date',
-//         'dateFin' => 'required|date|date_order:dateDebut',
-//         'description' => 'required',
-//     ];
-
-//     return $validators_services[Validators::VALIDATE->value]($data, $rules);
-// }
 
 /**
  * Récupère toutes les promotions avec pagination

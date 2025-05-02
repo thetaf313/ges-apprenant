@@ -11,18 +11,21 @@ global $file_services, $referentiel_services;
 
 $promotion_services = [
 
-    // Promotions::FIND_ACTIVE_PROMOTION->value => function () use (&$promotion_services): ?array {
-    //     $promotions = $promotion_services[Promotions::FIND_ALL_PROMOTIONS->value]();
-    //     $active = array_filter($promotions, fn($promo) => $promo['status'] === 'active');
-    //     return !empty($active) ? $active[0] : null;
-    // },
+    
     Promotions::FIND_ACTIVE_PROMOTION->value => function () use (&$promotion_services): ?array {
         $promotions = $promotion_services[Promotions::FIND_ALL_PROMOTIONS->value]();
         $active = array_filter($promotions, fn($promo) => strtolower($promo['status']) === 'active');
     
-        $active = array_values($active); // Re-indexer pour avoir 0, 1, 2...
+        $active = array_values($active);
     
         return !empty($active) ? $active[0] : null;
+    },
+
+    Promotions::FIND_CURRENT_PROMOTION->value => function () use (&$promotion_services) : ?array {
+        $promotions = $promotion_services[Promotions::FIND_ALL_PROMOTIONS->value]();
+        $current = array_filter($promotions, fn($promo) => strtolower($promo['etat']) === 'en cours');
+        $current = array_values($current);
+        return !empty($current) ? $current[0] : null;
     },
     
 

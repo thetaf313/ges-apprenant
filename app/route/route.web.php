@@ -10,6 +10,7 @@ require_once __DIR__ . './../enums/Apprenants.php';
 require_once __DIR__ . './../enums/Sessions.php';
 require_once __DIR__ . './../enums/Users.php';
 require_once __DIR__ . './../enums/Validators.php';
+require_once __DIR__ . './../enums/Auths.php';
 require_once __DIR__ . './../translate/fr/error.fr.php';
 require_once __DIR__ . './../translate/fr/message.fr.php';
 
@@ -22,6 +23,7 @@ session_start();
 require_once Paths::MODELS->resolve('model.php');
 require_once Paths::SERVICES->resolve('session.service.php');
 require_once Paths::SERVICES->resolve('validator.service.php');
+require_once Paths::SERVICES->resolve('mail.service.php');
 require_once Paths::CONTROLLERS->resolve('controller.php');
 
 use function App\Controllers\handle_apprenant;
@@ -103,14 +105,12 @@ function handle_route(): void {
         Routes::ERROR->value,
     ];
 
-    // Vérifie si la route existe
     if (!array_key_exists($request_path, $routes)) {
         http_response_code(404);
         redirect_to_route(Routes::ERROR->resolve() . '?code=404');
         exit;
     }
 
-    // Si la route n'est pas publique, on vérifie l'authentification
     if (!in_array($request_path, $public_routes)) {
         // Vérifie si l'utilisateur est connecté via session
         if (!isset($_SESSION['user'])) {
