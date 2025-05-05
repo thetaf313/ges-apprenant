@@ -1,0 +1,138 @@
+#add-apprenant-container .import-section {
+  margin-bottom: 0.4rem;
+}
+
+#add-apprenant-container .import-section h3 {
+  padding-bottom: 0.3rem;
+}
+
+#add-apprenant-container .import-section form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 3rem;
+}
+
+#add-apprenant-container .import-section form p {
+  font-size: var(--text-sm);
+}
+
+#add-apprenant-container .import-section form a {
+  padding: 0.5rem 1rem;
+  background-color: var(--secondary-color);
+  color: #fff !important;
+  border-radius: var(--bd-radius-2);
+  font-size: var(--text-normal);
+}
+
+#add-apprenant-container .import-section form .file-upload-container {
+  width: 30%;
+  height: 2rem;
+}
+
+#add-apprenant-container form label {
+  font-size: 0.9rem;
+}
+
+#add-apprenant-container .manual-section form input[type="text"],
+#add-apprenant-container .manual-section form select {
+  padding: 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+#add-apprenant-container .manual-section form select {
+  outline: none;
+  background-color: #fff;
+}
+
+.manual-section form fieldset {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.manual-section form fieldset .col {
+  flex: 1;
+}
+
+.manual-section form .form-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.manual-section form .form-group .field {
+  width: 70%;
+}
+
+.manual-section form .form-group input {
+  display: block;
+  width: 100%;
+  border: 1px solid;
+}
+
+/* Style moderne pour les zones d'upload */
+#add-apprenant-container .file-upload-container {
+  position: relative; /* Ajout de cette propriété */
+  width: 100%;
+  border: 2px dashed #4141e6;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 0.5rem;
+  background-color: white;
+  overflow: hidden;
+}
+
+.manual-section .file-upload-container {
+  margin: 1rem 0; /* Remplacer la transformation par une marge simple */
+}
+
+#add-apprenant-container .file-upload-container:hover {
+  border-color: var(--primary-color);
+}
+
+#add-apprenant-container .file-upload-container.active {
+  border-color: var(--primary-color);
+  background-color: rgba(74, 108, 247, 0.05);
+}
+
+#add-apprenant-container .file-upload-container input[type="file"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2; /* Ajout d'un z-index pour s'assurer qu'il reste cliquable */
+}
+
+#add-apprenant-container .upload-content {
+  text-align: center;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  pointer-events: none; /* Empêche les interférences avec les clics */
+  z-index: 1;
+}
+
+#add-apprenant-container .upload-icon {
+  font-size: 1.25rem;
+  color: var(--primary-color);
+}
+
+#add-apprenant-container .upload-text {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}

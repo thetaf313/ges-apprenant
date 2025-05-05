@@ -2,55 +2,134 @@
 namespace App\Route;
 
 require_once __DIR__ . './../enums/Paths.php';
+require_once __DIR__ . './../enums/Routes.php';
 require_once __DIR__ . './../enums/Urls.php';
+require_once __DIR__ . './../enums/Promotions.php';
+require_once __DIR__ . './../enums/Referentiels.php';
+require_once __DIR__ . './../enums/Apprenants.php';
 require_once __DIR__ . './../enums/Sessions.php';
 require_once __DIR__ . './../enums/Users.php';
 require_once __DIR__ . './../enums/Validators.php';
+require_once __DIR__ . './../enums/Auths.php';
 require_once __DIR__ . './../translate/fr/error.fr.php';
 require_once __DIR__ . './../translate/fr/message.fr.php';
 
 use App\Enums\Paths;
-// use App\Enums\Urls;
-// use App\Enums\Sessions;
-// use App\Enums\FileServices;
-// use App\Enums\Users;
-// use App\Enums\Validators;
+use App\Enums\Routes;
+use App\Enums\Sessions;
 
-use function App\Controllers\redirect_to_route;
+session_start();
 
 require_once Paths::MODELS->resolve('model.php');
 require_once Paths::SERVICES->resolve('session.service.php');
 require_once Paths::SERVICES->resolve('validator.service.php');
+require_once Paths::SERVICES->resolve('mail.service.php');
 require_once Paths::CONTROLLERS->resolve('controller.php');
 
-// Initialisation de la session
-session_start();
+use function App\Controllers\handle_apprenant;
+use function App\Controllers\redirect_to_route;
+use function App\Controllers\handle_auth;
+use function App\Controllers\handle_home;
+use function App\Controllers\handle_promotion;
+use function App\Controllers\handle_referentiel;
+use function App\Controllers\handle_user_apprenant;
 
+/**
+ * Tableau des routes et de leurs handlers
+ * 
+ * @var array<string, callable> $routes
+ */
+$routes = [
+    Routes::HOME->value => function() {
+        require_once Paths::CONTROLLERS->resolve('home.controller.php');
+        handle_home();
+    },
+
+    Routes::AUTH->value => function() {
+        require_once Paths::CONTROLLERS->resolve('auth.controller.php');
+        handle_auth();
+    },
+    
+    Routes::PROMOTION->value => function() {
+        require_once Paths::CONTROLLERS->resolve('promotion.controller.php');
+        handle_promotion();
+    },
+    
+    Routes::REFERENTIEL->value => function() {
+        require_once Paths::CONTROLLERS->resolve('referentiel.controller.php');
+        handle_referentiel();
+    },
+
+    Routes::APPRENANT->value => function() {
+        require_once Paths::CONTROLLERS->resolve('apprenant.controller.php');
+        handle_apprenant();
+    },
+
+    Routes::USER_APPRENANT->value => function() {
+        require_once Paths::CONTROLLERS->resolve('user_apprenant.controller.php');
+        handle_user_apprenant();
+    },
+
+    Routes::ERROR->value => function() {
+        require_once Paths::CONTROLLERS->resolve('error.controller.php');
+        handle_error();
+    }
+];
+
+/**
+ * Gère la route actuelle
+ */
+// function handle_route(): void {
+//     global $routes;
+    
+//     // Récupère à la fois le path et les query params
+//     $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+//     // $path = strtok($request_uri, '?'); // Extrait le path avant le ?
+    
+//     // Trouver la route qui correspond
+//     if (isset($routes[$request_path])) {
+//         $routes[$request_path]();  // Appel direct du handler
+//         return;
+//     }
+    
+//     // Route non trouvée
+//     http_response_code(404);
+//     redirect_to_route('/error?code=404');
+//     exit;
+// }
 
 function handle_route(): void {
-    // Liste des routes autorisées
-    $routes = [
-        '' => 'auth.controller.php',
-        'auth' => 'auth.controller.php',
-        'promotion' => 'promotion.controller.php',
-        'referentiel' => 'referentiel.controller.php',
-        'error' => 'error.controller.php'
+    global $routes;
+
+    // Récupère la route demandée (sans query string)
+    $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+    // Routes accessibles sans authentification
+    $public_routes = [
+        Routes::AUTH->value,
+        Routes::ERROR->value,
     ];
 
-    // Récupération de la page demandée
-    $page = $_REQUEST['page'] ?? '';
-    
-    if (array_key_exists($page, $routes)) {
-        $controllerFile = Paths::CONTROLLERS->resolve($routes[$page]);
-        
-        if (file_exists($controllerFile)) {
-            require_once $controllerFile;
-            return;
+    if (!array_key_exists($request_path, $routes)) {
+        http_response_code(404);
+        redirect_to_route(Routes::ERROR->resolve() . '?code=404');
+        exit;
+    }
+
+    if (!in_array($request_path, $public_routes)) {
+        // Vérifie si l'utilisateur est connecté via session
+        if (!isset($_SESSION['user'])) {
+            // Pas connecté, redirige vers la page de login
+            redirect_to_route(Routes::AUTH->resolve());
+            exit;
         }
     }
 
-    // Route non trouvée
-    redirect_to_route('/?page=error&code=404');
-    //require_once Paths::CONTROLLERS->resolve('error.controller.php');
-    //http_response_code(404);
+    // Exécute le handler associé à la route
+    $routes[$request_path]();
 }
+
+
+
+// Exécute le routeur
+handle_route();

@@ -1,10 +1,20 @@
+<?php
+
+use App\Enums\Routes;
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Liste des Promotions</title>
-    <link rel="stylesheet" href="assets/css/styles.css" />
+    <title>Liste des promotions</title>
+    <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/styles.css" />
+    <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/add-promo.styles.css" />
+    <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/add_referentiel.styles.css" />
+    <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/list_apprenants.styles.css" />
+    <link rel="stylesheet" href="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/css/add_apprenants.styles.css" />
+
+
   </head>
   <body>
     <div class="dashboard-container">
@@ -12,16 +22,16 @@
       <aside class="sidebar">
         <div class="top-sidebar">
           <div class="logo">
-            <img src="../assets/images/logo-odc-sonatel.png" alt="Logo" />
+            <img src="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/images/logo-odc-sonatel.png" alt="Logo" />
           </div>
-          <h3>Promotion - 2025</h3>
+          <h3><?= str_replace(' ', ' - ', $stats['current_promotion']['nom_promotion'])  ?></h3>
           <div class="separator"></div>
         </div>
 
         <nav class="menu">
           <ul>
             <li>
-              <a href="#">
+              <a href="<?= Routes::HOME->resolve() ?>">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -37,7 +47,7 @@
               </a>
             </li>
             <li class="active">
-              <a href="#">
+              <a href="<?= Routes::PROMOTION->resolve() ?>">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -53,7 +63,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="<?= Routes::REFERENTIEL->resolve() ?>?action=list-ref-promo">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -69,7 +79,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="<?= Routes::APPRENANT->resolve() ?>">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -133,7 +143,7 @@
           </ul>
         </nav>
         <div class="bottom-sidebar">
-          <a href="#">
+          <a href="<?= Routes::AUTH->resolve() ?>?action=logout">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -212,10 +222,10 @@
             </div>
             <div class="user-profile">
               <div class="picture">
-                <img src="../assets/images/img-promo-2025.jpg" alt="" />
+                <img src="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/images/img-promo-2025.jpg" alt="" />
               </div>
               <a href="#">
-                <h4>admin@sonatel-academy.sn<span>Administrateur</span></h4>
+                <h4><?= htmlspecialchars($_SESSION['user']['email']) ?><span><?= htmlspecialchars($_SESSION['user']['role']) ?></span></h4>
               </a>
             </div>
           </div>
@@ -230,115 +240,14 @@
       </main>
     </div>
     <!-- Checkbox pour ouvrir/fermer -->
-    <input type="checkbox" id="modal-toggle" />
+    <!-- <input type="checkbox" id="modal-toggle" /> -->
 
     <!-- Modal overlay -->
-    <div class="modal">
-      <div class="modal-content form-style">
-        <div class="form-container">
-          <h2>Créer une nouvelle promotion</h2>
-          <p class="description">
-            Remplissez les informations ci-dessous pour créer une nouvelle
-            promotion.
-          </p>
+    <?php
+$errors = $_SESSION['errors'] ?? [];
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['errors'], $_SESSION['old']);
+?>
 
-          <!-- Bouton de fermeture -->
-          <label for="modal-toggle" class="close-btn">✕</label>
-
-          <form>
-            <div class="form-group">
-              <label for="nom">Nom de la promotion</label>
-              <input type="text" id="nom" placeholder="Ex: Promotion 2025" />
-              <span class="error-input">Le champ nom est requis</span>
-            </div>
-
-            <div class="date-group" style="display: flex; gap: 1rem">
-              <div style="flex: 1">
-                <label for="debut">Date de début</label>
-                <div class="input-box">
-                  <input
-                    type="text"
-                    id="debut"
-                    name="debut"
-                    placeholder="jj/mm/aaaa"
-                  />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill=""
-                      d="M8 14q-.425 0-.712-.288T7 13t.288-.712T8 12t.713.288T9 13t-.288.713T8 14m4 0q-.425 0-.712-.288T11 13t.288-.712T12 12t.713.288T13 13t-.288.713T12 14m4 0q-.425 0-.712-.288T15 13t.288-.712T16 12t.713.288T17 13t-.288.713T16 14M5 22q-.825 0-1.412-.587T3 20V6q0-.825.588-1.412T5 4h1V2h2v2h8V2h2v2h1q.825 0 1.413.588T21 6v14q0 .825-.587 1.413T19 22zm0-2h14V10H5z"
-                    />
-                  </svg>
-                </div>
-                <span class="error-input">Le champ date est requis</span>
-              </div>
-              <div style="flex: 1">
-                <label for="fin">Date de fin</label>
-                <div class="input-box">
-                  <input
-                    type="text"
-                    id="fin"
-                    name="fin"
-                    placeholder="jj/mm/aaaa"
-                  />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill=""
-                      d="M8 14q-.425 0-.712-.288T7 13t.288-.712T8 12t.713.288T9 13t-.288.713T8 14m4 0q-.425 0-.712-.288T11 13t.288-.712T12 12t.713.288T13 13t-.288.713T12 14m4 0q-.425 0-.712-.288T15 13t.288-.712T16 12t.713.288T17 13t-.288.713T16 14M5 22q-.825 0-1.412-.587T3 20V6q0-.825.588-1.412T5 4h1V2h2v2h8V2h2v2h1q.825 0 1.413.588T21 6v14q0 .825-.587 1.413T19 22zm0-2h14V10H5z"
-                    />
-                  </svg>
-                </div>
-                <span class="error-input">Le champ date est requis</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="photo">Photo de la promotion</label>
-              <div class="input-box">
-                <div class="upload-box">
-                  <span><strong>Ajouter</strong> ou glisser</span>
-                  <input
-                    type="file"
-                    id="photo"
-                    accept="image/png, image/jpeg"
-                    onchange="this.closest('.upload-box').classList.add('uploaded')"
-                  />
-                </div>
-                <span>Format JPG, PNG. Taille max 2MB</span>
-              </div>
-              <span class="error-input">Le champ photo est requis</span>
-            </div>
-
-            <div class="form-group">
-              <label for="referentiel">Référentiels</label>
-              <div class="search-referentiel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22.5" height="24" viewBox="0 0 15 16"><path fill="" d="M6.5 13.02a5.5 5.5 0 0 1-3.89-1.61C1.57 10.37 1 8.99 1 7.52s.57-2.85 1.61-3.89c2.14-2.14 5.63-2.14 7.78 0C11.43 4.67 12 6.05 12 7.52s-.57 2.85-1.61 3.89a5.5 5.5 0 0 1-3.89 1.61m0-10c-1.15 0-2.3.44-3.18 1.32C2.47 5.19 2 6.32 2 7.52s.47 2.33 1.32 3.18a4.51 4.51 0 0 0 6.36 0C10.53 9.85 11 8.72 11 7.52s-.47-2.33-1.32-3.18A4.48 4.48 0 0 0 6.5 3.02"/><path fill="" d="M13.5 15a.47.47 0 0 1-.35-.15l-3.38-3.38c-.2-.2-.2-.51 0-.71s.51-.2.71 0l3.38 3.38c.2.2.2.51 0 .71c-.1.1-.23.15-.35.15Z"/></svg>
-                <input
-                  type="text"
-                  id="referentiel"
-                  placeholder="Rechercher un référentiel..."
-                />
-              </div>
-
-              <span class="error-input">Le champ référentiel est requis</span>
-            </div>
-
-            <div class="actions">
-              <label for="modal-toggle" class="cancel">Annuler</label>
-              <button type="submit" class="submit">Créer la promotion</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   </body>
 </html>
