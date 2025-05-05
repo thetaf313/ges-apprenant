@@ -34,6 +34,7 @@ $promotion_services = [
         $data = $file_services[FileServices::JSON_TO_ARRAY->value]();
 
         $active_promotion = $promotion_services[Promotions::FIND_ACTIVE_PROMOTION->value]();
+        $current_promotion = $promotion_services[Promotions::FIND_CURRENT_PROMOTION->value]() ?? [];
         // $_SESSION['active_promotion'] = $active_promotion;
         
         if ($active_promotion) {
@@ -48,6 +49,7 @@ $promotion_services = [
             }
 
             return [
+                'current_promotion' => $current_promotion,
                 'active_promotion' => $active_promotion,
                 'num_referentiels' => $num_referentiels,
                 'num_apprenants' => $num_apprenants,

@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Enums\Auths;
 use App\Enums\Paths;
 use App\Enums\Routes;
 use App\Enums\Sessions;
@@ -100,6 +101,14 @@ function process_login(): void {
         // $session_services[Sessions::SET_USER->value]($user);
         $session_services[Sessions::SET_FLASH_SUCCESS->value](FrSuccessMessage::LOGIN_SUCCESS->value);
         error_log('Utilisateur authentifié: ' . print_r($_SESSION, true));
+        $connected_user = $_SESSION['user'];
+        if ($connected_user['must_change_password']) {
+            $session_services[Sessions::SET_ERROR_MESSAGE->value]('Veuillez mettre à jour votre mot de passe');
+            redirect_to_route(Routes::AUTH->resolve() . '?action=reset-password');
+        
+        } else {
+            redirect_to_route(Routes::HOME->resolve());
+        }
         redirect_to_route(Routes::PROMOTION->resolve());
         // render_view('promotion/list_promotion_grid.html.php', 'grid.layout.php');
         exit;
@@ -179,7 +188,7 @@ function show_reset_password_form(): void {
 // exit;
 
 function update_password(): void {
-    global $validators_services, $session_services, $user_services;
+    global $validators_services, $session_services, $user_services, $auth_services;
 
     $rules = [
         'password' => ['required', 'min:8'],
@@ -194,7 +203,7 @@ function update_password(): void {
         exit;
     }
 
-    $email = $session_services[Sessions::GET_EMAIL_PASSWORD_TO_UPDATE->value]();
+    $email = $session_services[Sessions::GET_EMAIL_PASSWORD_TO_UPDATE->value]() ?? $session_services[Sessions::GET_USER->value]()['email'];
     if (!$email) {
         $session_services[Sessions::SET_ERROR_MESSAGE->value]("Une erreur est survenue.");
         redirect_to_route(Routes::AUTH->resolve() . '?action=login');
@@ -203,9 +212,11 @@ function update_password(): void {
 
     $users = $user_services[Users::GET_USERS->value]();
 
-    array_walk($users, function(&$user) use ($email) {
+    array_walk($users, function(&$user) use ($email, &$auth_services) {
         if ($user['email'] === $email) {
-            $user['password'] = $_POST['password'];
+            $user['password'] = $auth_services[Auths::HASH_PASSWORD->value]($_POST['password']);
+            $user['must_change_password'] = false;
+            return;
         }
     });
 
@@ -239,7 +250,8 @@ function authenticate_user(array $user, $user_services): bool {
             'nom' => $user_found['nom'],
             'prenom' => $user_found['prenom'],
             'role' => $user_found['role'],
-            'authenticated' => true
+            'authenticated' => true,
+            'must_change_password' => $user_found['must_change_password']
         ]);
         return true;
     }
@@ -270,7 +282,7 @@ function register_apprenant() {
         if ($success) {
             session_service_exec(Sessions::SET_FLASH_SUCCESS, 'success', 'Apprenant inscrit et email envoyé.');
         } else {
-            session_service_exec(Sessions::SET_FLASH_ERROR, 'error', 'Erreur lors de l’envoi du mail.');
+            session_service_exec(Sessions::SET_ERROR_MESSAGE, 'error', 'Erreur lors de l’envoi du mail.');
         }
     
         redirect_to_route(Routes::APPRENANT->resolve());

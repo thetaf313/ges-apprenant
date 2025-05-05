@@ -32,7 +32,7 @@ use function App\Controllers\handle_auth;
 use function App\Controllers\handle_home;
 use function App\Controllers\handle_promotion;
 use function App\Controllers\handle_referentiel;
-
+use function App\Controllers\handle_user_apprenant;
 
 /**
  * Tableau des routes et de leurs handlers
@@ -63,6 +63,11 @@ $routes = [
     Routes::APPRENANT->value => function() {
         require_once Paths::CONTROLLERS->resolve('apprenant.controller.php');
         handle_apprenant();
+    },
+
+    Routes::USER_APPRENANT->value => function() {
+        require_once Paths::CONTROLLERS->resolve('user_apprenant.controller.php');
+        handle_user_apprenant();
     },
 
     Routes::ERROR->value => function() {

@@ -23,7 +23,7 @@ use App\Enums\Routes;
           <div class="logo">
             <img src="<?='http://'. $_SERVER['HTTP_HOST'];?>/assets/images/logo-odc-sonatel.png" alt="Logo" />
           </div>
-          <h3><?= str_replace(' ', ' - ', $stats['active_promotion']['nom_promotion'])  ?></h3>
+          <h3><?= str_replace(' ', ' - ', $stats['current_promotion']['nom_promotion'])  ?></h3>
           <div class="separator"></div>
         </div>
 

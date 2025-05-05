@@ -1,0 +1,43 @@
+{
+    "stand_by_apprenants": [
+        {
+            "prenom": "test",
+            "nom": "test",
+            "date_naiss": "03\/02\/2000",
+            "lieu_naiss": "Dakar",
+            "adresse": "Fass delorme",
+            "email": "test@gmail.com",
+            "telephone": "77000000",
+            "referentiel": "",
+            "nom_tuteur": "tuteur",
+            "adresse_tuteur": "dakar",
+            "tel_tuteur": "770000000",
+            "lien_parente": "pere",
+            "promotion": "promotion 2025",
+            "erreurs": {
+                "referentiel": "Le champ referentiel est obligatoire"
+            },
+            "id": "b1336c66-d524-4d2a-8a9d-d57818d57818"
+        },
+        {
+            "prenom": "twist",
+            "nom": "",
+            "date_naiss": "06\/06\/1995",
+            "lieu_naiss": "Dakar",
+            "adresse": "28 Dalifort",
+            "email": "moustiques1234@gmail.com",
+            "telephone": "783894217",
+            "referentiel": "developpement web\/mobile",
+            "nom_tuteur": "presi",
+            "adresse_tuteur": "28 dlifort",
+            "tel_tuteur": "776326451",
+            "lien_parente": "pere",
+            "promotion": "promotion 2025",
+            "erreurs": {
+                "nom": "Le champ nom est obligatoire",
+                "email": "Cette adresse email est d\u00e9j\u00e0 utilis\u00e9e"
+            },
+            "id": "3e686e6b-6818-40db-a8c9-e3ef1be85e82"
+        }
+    ]
+}
