@@ -318,9 +318,9 @@ function create_apprenant() {
         }
 
         // Générer les identifiants
-        $matricule = $services['generate_matricule']();
-        $password = $services['generate_password']();
-        $hashed_password = $services['hash_password']($password);
+        $matricule = $auth_services['generate_matricule']();
+        $password = $auth_services['generate_password']();
+        $hashed_password = $auth_services['hash_password']($password);
 
         // Créer l'utilisateur
         $user = [
@@ -333,9 +333,9 @@ function create_apprenant() {
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $services['save_user']($user);
-        $services['send_welcome_email']($user['email'], $matricule, $password);
-        $services['log_audit']('USER_CREATED', ['matricule' => $matricule]);
+        $auth_services['save_user']($user);
+        $auth_services['send_welcome_email']($user['email'], $matricule, $password);
+        $auth_services['log_audit']('USER_CREATED', ['matricule' => $matricule]);
 
         $_SESSION['success'] = MSG_SUCCESS['USER_CREATED'];
         header('Location: /user/success');
@@ -405,14 +405,24 @@ function login_controller() {
     global $services;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $matricule = $_POST['matricule'] ?? '';
-        $password = $_POST['password'] ?? '';
 
-        $user = $services['find_user']($matricule);
+        $user = [
+            'login' => test_input($_POST['login']),
+            'password' => test_input($_POST['password'])
+        ];
+
+        $rules = [
+            'login' => ['required', str_contains($user['login'], '@') ? 'email' : 'min:7'],
+            'password' => ['required', 'min:8']
+        ];
+
+        // Validation
+
+        $user_found = $services['find_user']($user['login']);
         
-        if (!$user || !password_verify($password, $user['password'])) {
-            $_SESSION['error'] = FrErrorMessages::USER_NOT_FOUND->value;
-            header('Location: /login');
+        if (!$user || !password_verify($$user['password'], $user_found['password'])) {
+            $_SESSION['error_message'] = FrErrorMessages::USER_NOT_FOUND->value;
+            redirect_to_route(Routes::AUTH->resolve());
             exit;
         }
 
@@ -429,6 +439,25 @@ function login_controller() {
 
     require 'views/login.php';
 }
+
+
+function validate(array $data, array $rules) {
+    global $validators_services, $session_services;
+
+    $validation = $validators_services[Validators::VALIDATE->value]($data, $rules);
+
+    if (!$validation['is_valid']) {
+        $session_services[Sessions::SET_ERRORS->value]($validation['errors']);
+        $session_services[Sessions::SET_OLD_INPUT->value]($data);
+        $session_services[Sessions::SET_ERROR_MESSAGE->value](FrErrorMessages::LOGIN_ERROR->value);
+        redirect_to_route(Routes::AUTH->resolve());
+        exit;
+    }
+
+
+
+}
+
 
 function get_all_users() : array {
     global $user_services;

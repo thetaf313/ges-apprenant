@@ -7,6 +7,7 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
 // Récupération de l'apprenant
+$apprenantModel = new ApprenantModel();
 $apprenant = $apprenantModel->getById($_SESSION['apprenant_id']);
 
 // Données à encoder

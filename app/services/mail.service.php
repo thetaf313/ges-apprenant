@@ -4,7 +4,11 @@ namespace App\Services;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require __DIR__ . '/../../vendor/autoload.php'; // adapter si besoin
+require __DIR__ . '/../../vendor/autoload.php'; //adapter si besoin
+
+// Charger les variables d'environnement
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
 
 function send_user_credentials(string $email, string $prenom, string $password): bool {
     $mail = new PHPMailer(true);
@@ -14,8 +18,8 @@ function send_user_credentials(string $email, string $prenom, string $password):
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com'; // ou ton serveur SMTP
         $mail->SMTPAuth = true;
-        $mail->Username = 'moustiques313@gmail.com';
-        $mail->Password = 'mubrtarcgssjztbi';
+        $mail->Username = $_ENV['MAIL_USERNAME'];
+        $mail->Password = $_ENV['MAIL_PASSWORD'];
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
